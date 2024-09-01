@@ -6,8 +6,8 @@ from cloudinary.models import CloudinaryField
 
 class Account(AbstractUser):
     phone = models.CharField(max_length=10, null=False, default="None")
-    address = models.CharField(max_length=100, null=False, default="None")
     role = models.CharField(max_length=100, null=False, default="user")
+    dob = models.DateField(auto_now=False, auto_now_add=False, default="2024-9-2")
     avatar = CloudinaryField(null=True)
 
 class BaseModel(models.Model):

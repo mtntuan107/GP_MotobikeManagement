@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apis.apps.ApisConfig'
+    'apis.apps.ApisConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +137,8 @@ cloudinary.config(
 )
 
 AUTH_USER_MODEL = 'apis.Account'
+
+REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 2
+ }
