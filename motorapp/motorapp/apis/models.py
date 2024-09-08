@@ -31,6 +31,10 @@ class Part(BaseModel):
     part_number = models.CharField(max_length=100, null=False, default="None")
     image = CloudinaryField(null=True)
     duration = models.IntegerField(null=False, default=0)
+    price = models.IntegerField(null=False, default=0)
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, null=True)
 
 class MotorbikeModel(BaseModel):
     name = models.CharField(max_length=100, null=False, default="None")
@@ -39,6 +43,8 @@ class MotorbikeModel(BaseModel):
     year = models.CharField(max_length=100, null=False, default="None")
     type = models.CharField(max_length=100, null=False, default="None")
     image = CloudinaryField(null=True)
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 class PartMM(BaseModel):
     part = models.ForeignKey(Part, null=False, on_delete=models.CASCADE)
@@ -53,9 +59,9 @@ class UserMotorbike(BaseModel):
 
 class MaintenanceType(BaseModel):
     name = models.CharField(max_length=100, null=False, default="None")
+    cost = models.IntegerField(null=False, default=0)
 
-
-class MaintenanceHistory(BaseModel):
+class Maintenance(BaseModel):
     day = models.DateField(auto_now=False, auto_now_add=False, default="2024-9-2")
     description = models.CharField(max_length=100, null=False, default="None")
 
