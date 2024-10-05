@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework import routers
+from .admin import admin_site
 
 router = routers.DefaultRouter()
 router.register('account', views.AccountViewSet, basename='account')
@@ -12,8 +13,9 @@ router.register('part_mm', views.PartMMViewSet, basename='part_mm')
 router.register('company', views.CompanyViewSet, basename='company')
 router.register('maintenance', views.MaintenanceViewSet, basename='maintenance')
 router.register('maintenance_type', views.MaintenanceTypeViewSet, basename='maintenance_type')
+
 urlpatterns = [
-    # path('', views.index, name='index'),
     path('', include(router.urls)),
+    path('admin/', admin_site.urls),
 ]
 

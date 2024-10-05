@@ -4,7 +4,7 @@ from .models import *
 class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'email', 'avatar', 'phone', 'dob', 'role']
+        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'email', 'avatar','address', 'phone', 'dob', 'role']
 
 class PartCategorySerializer(ModelSerializer):
     class Meta:

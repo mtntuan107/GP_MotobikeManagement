@@ -28,7 +28,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    )
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apis.apps.ApisConfig',
     'rest_framework',
+    'oauth2_provider',
+    # 'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +56,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'motorapp.urls'
 
@@ -138,7 +148,5 @@ cloudinary.config(
 
 AUTH_USER_MODEL = 'apis.Account'
 
-REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'PAGE_SIZE': 2
- }
+CLIENT_ID = '6jex3YDRLJvcSWKzkDWYn1SDW4zJWykwra0CsE6k'
+CLIENT_SECRET = 'I4O49zDCAUJauSpocxUI7AUou2WtrvXIheQGlBoI0jVCNfLuoX5fEdBaof1PdVCNpiPThXiypZfs8eodPPSgftH96FZv3UwF98Jm2NlQyfNY5xdRbirFAc8ap3Q6mTfB'
