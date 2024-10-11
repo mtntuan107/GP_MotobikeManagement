@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import apiURL from "../api/api";
 import urlCloudinary from "../api/urlCloudinary";
+import '../styles/Profile.css'
 
 const urlImg = urlCloudinary;
 const Profile = () => {
@@ -48,7 +49,6 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
-      <h2>Profile</h2>
       <div className="profile-details">
         <div className="profile-avatar">
           {userProfile.avatar ? (
@@ -58,7 +58,6 @@ const Profile = () => {
           )}
         </div>
         <div className="profile-info">
-          <h3>{userProfile.username}</h3>
           <h2>Hello, {userProfile['first_name']} {userProfile['last_name']}</h2>
           <p><strong>Phone:</strong> {userProfile.phone}</p>
           <p><strong>Email:</strong> {userProfile.email}</p>
@@ -66,7 +65,7 @@ const Profile = () => {
           <p><strong>Address:</strong> {userProfile.address}</p>
         </div>
       </div>
-      <button className="logout-button" onClick={handleLogout}>Logout</button>
+      {/*<button className="logout-button" onClick={handleLogout}>Logout</button>*/}
     </div>
   );
 };

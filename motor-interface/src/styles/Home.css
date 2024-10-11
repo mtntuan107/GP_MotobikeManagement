@@ -1,0 +1,66 @@
+.home-container {
+  display: flex;
+}
+
+.drawer {
+  position: fixed; /* Fix drawer to the left side */
+  top: 0;
+  left: 0;
+  width: 250px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure drawer stays on top */
+}
+
+.drawer-content {
+  flex-grow: 1;
+  overflow-y: auto; /* Allow scrolling if content exceeds height */
+}
+
+.drawer-content h2 {
+  margin-bottom: 20px;
+}
+
+.drawer-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.drawer-content li {
+  margin-bottom: 15px;
+}
+
+.drawer-content li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+}
+
+.logout-section {
+  margin-top: 20px;
+}
+
+.logout-btn {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+.logout-btn:hover {
+  background-color: #ff1a1a;
+}
+
+.content {
+  margin-left: 250px; /* Shift content to accommodate the drawer */
+  padding: 20px;
+  flex-grow: 1;
+}

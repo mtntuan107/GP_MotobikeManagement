@@ -1,0 +1,60 @@
+.schedule-container {
+  padding: 20px;
+}
+
+.schedule-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px; /* Increased space between sections */
+}
+
+.partmm-section, .maintenance-section {
+  width: 45%; /* Reduced width to allow more space */
+}
+
+.partmm-card {
+  background-color: #e6ffe6; /* Background color */
+  border: 1px solid green;
+  padding: 15px;
+  margin-bottom: 15px; /* Increased space between cards */
+  border-radius: 5px;
+  color: green;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Added shadow for card */
+  min-height: 100px; /* Minimum height to prevent cards from being too short */
+}
+
+.maintenance-card {
+  background-color: #e6ffe6; /* Background color */
+  border: 1px solid green;
+  padding: 15px;
+  margin-bottom: 15px; /* Increased space between cards */
+  border-radius: 5px;
+  color: green;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Added shadow for card */
+  min-height: 100px; /* Minimum height to prevent cards from being too short */
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 15px; /* Space below the header */
+}
+
+h4 {
+  margin-bottom: 10px; /* Space below h4 elements */
+}
+
+p {
+  margin: 5px 0; /* Margin for paragraphs */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .schedule-content {
+    flex-direction: column; /* Stack sections on small screens */
+    width: 100%;
+  }
+
+  .partmm-section, .maintenance-section {
+    width: 100%; /* Full width for small screens */
+  }
+}

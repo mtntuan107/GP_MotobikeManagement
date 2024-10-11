@@ -1,0 +1,36 @@
+.motorbike-info {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.motorbike-info h2 {
+  text-align: center;
+  color: #333;
+  margin-top: 20px;
+}
+
+.motorbike-info div {
+  margin-bottom: 15px;
+}
+
+.motorbike-info strong {
+  color: #555;
+}
+
+/* Style for the motorbike image at the top */
+.motorbike-image {
+  text-align: center;  /* Center the image */
+  margin-bottom: 20px;  /* Add spacing below the image */
+}
+
+.motorbike-image img {
+  max-width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 10px;  /* Add slight rounding to the corners */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow effect */
+}

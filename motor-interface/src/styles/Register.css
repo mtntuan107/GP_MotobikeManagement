@@ -1,0 +1,102 @@
+/* Overall register container */
+.register-container {
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 100vh; /* Full viewport height */
+    background-color: #f4f4f4; /* Light background for the whole page */
+}
+
+/* Register form styling */
+.register-form {
+    background-color: white; /* White background for form */
+    padding: 20px; /* Decreased padding around the form */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    width: 100%; /* Full width to fit smaller screens */
+    max-width: 500px; /* Adjust maximum width for smaller form */
+}
+
+/* Form heading */
+.register-form h2 {
+    text-align: center; /* Center the heading */
+    margin-bottom: 15px; /* Space below the heading */
+}
+
+/* Form label styling */
+.register-form label {
+    font-weight: bold; /* Bold labels */
+    margin-bottom: 5px; /* Space below labels */
+    display: block; /* Block display for label */
+}
+
+/* Input field styling */
+.register-form input {
+    width: 90%; /* Full width */
+    padding: 8px; /* Decreased padding inside input */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Slightly rounded corners */
+    margin-bottom: 15px; /* Decreased space below input fields */
+}
+
+/* Make specific inputs inline */
+.input-inline {
+    display: flex; /* Use flexbox for inline items */
+    justify-content: space-between; /* Space between items */
+    gap: 10px; /* Space between input fields */
+    margin-bottom: 15px; /* Increased space below the row */
+}
+
+/* Reduce width for specific inputs */
+.register-form input[name="firstname"],
+.register-form input[name="lastname"],
+.register-form input[name="email"],
+.register-form input[name="address"],
+.register-form input[name="phone"],
+.register-form input[name="avatar"] {
+    flex: 1; /* Flex-grow to fill space */
+}
+
+/* Button styling */
+.register-form button {
+    width: 100%; /* Full width */
+    padding: 10px; /* Decreased padding inside button */
+    background-color: #007bff; /* Primary color */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 4px; /* Slightly rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Slightly larger font */
+    margin-top: 10px; /* Space above the button */
+}
+
+/* Button hover effect */
+.register-form button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Register link styling */
+.register-form p {
+    text-align: center; /* Center the paragraph */
+    margin-top: 15px; /* Space above the paragraph */
+}
+
+/* Login button styling */
+.register-form p button {
+    background: none; /* No background */
+    color: #007bff; /* Primary color */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    text-decoration: underline; /* Underline for emphasis */
+    font-size: 16px; /* Font size for the link */
+}
+
+.error {
+    border: 2px solid red; /* Viền đỏ cho các trường không hợp lệ */
+}
+
+.error-message {
+    color: red; /* Màu đỏ cho thông báo lỗi */
+    font-size: 0.8em; /* Kích thước font nhỏ hơn cho thông báo */
+    margin-top: 5px; /* Khoảng cách trên thông báo lỗi */
+}

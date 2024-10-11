@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import apiURL from "../api/api"; // This should be your backend API URL
+import '../styles/Motorbike.css'; // Import the CSS file here
 
 function Motorbike() {
   const [motorbikeData, setMotorbikeData] = useState(null);
@@ -41,6 +42,15 @@ function Motorbike() {
 
   return (
     <div className="motorbike-info">
+      {/* Display image at the top */}
+      {motorbikeData.motorbike_model.image && (
+        <div className="motorbike-image">
+          <img
+            src={motorbikeData.motorbike_model.image}
+            alt={`${motorbikeData.motorbike_model.brand} image`}
+          />
+        </div>
+      )}
       <h2>Motorbike Details</h2>
       <div>
         <strong>License Plate:</strong> {motorbikeData.license_plate}
@@ -55,7 +65,6 @@ function Motorbike() {
         <strong>Buy Date:</strong> {new Date(motorbikeData.buy_days).toLocaleDateString()}
       </div>
 
-      <h3>Motorbike Model Information</h3>
       <div>
         <strong>Brand:</strong> {motorbikeData.motorbike_model.brand}
       </div>
@@ -68,16 +77,6 @@ function Motorbike() {
       <div>
         <strong>Year:</strong> {motorbikeData.motorbike_model.year}
       </div>
-      {motorbikeData.motorbike_model.image && (
-        <div>
-          <strong>Image:</strong><br />
-          <img
-            src={motorbikeData.motorbike_model.image}
-            alt={`${motorbikeData.motorbike_model.brand} image`}
-            style={{ width: "300px", height: "auto" }}
-          />
-        </div>
-      )}
     </div>
   );
 }

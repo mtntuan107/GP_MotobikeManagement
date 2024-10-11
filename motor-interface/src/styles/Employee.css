@@ -1,0 +1,79 @@
+/* Overall layout */
+.employee-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Drawer (sidebar) styling */
+.drawer {
+    width: 200px; /* Reduced width from 250px to 200px */
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Menu items */
+.drawer-content {
+    padding: 20px;
+}
+
+.drawer-content h2 {
+    margin-bottom: 20px;
+}
+
+.drawer-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.drawer-content ul li {
+    margin-bottom: 15px;
+}
+
+.drawer-content ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+}
+
+.drawer-content ul li a:hover {
+    color: #007bff;
+}
+
+/* Logout button section */
+.logout-section {
+    padding: 20px;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.logout-btn:hover {
+    background-color: #ff1a1a;
+}
+
+/* Main content area */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    margin-left: 200px; /* Update margin to match the reduced drawer width */
+    box-sizing: border-box; /* Ensure padding is included in the total width */
+}
+
+/* Ensure Maintenance component takes the full height */
+.maintenance-container {
+    height: 100%; /* Full height to avoid overflow */
+    display: flex; /* Use flexbox for better alignment */
+    flex-direction: column; /* Arrange items in a column */
+}

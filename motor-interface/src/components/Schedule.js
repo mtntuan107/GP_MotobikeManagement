@@ -2,45 +2,42 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import apiURL from "../api/api";
+import '../styles/Schedule.css'; // Ensure you have the CSS file
 
 const Schedule = () => {
   const [data, setData] = useState(null);
+  const [parts, setParts] = useState([]); // New state to store parts
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
 
     if (token) {
-      // Gọi API để lấy thông tin người dùng hiện tại
       axios.get(`${apiURL}/account/current-user/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((response) => {
-        // Kiểm tra vai trò của người dùng
-        if (response.data.role === 'user') {
-          setCurrentUser(response.data);
-          setIsLoggedIn(true);
-          // Gọi API lấy thông tin lịch bảo dưỡng
-          fetchSchedule(token);
-        } else if (response.data.role === 'e') {
-          // Chuyển hướng đến trang '/employee'
-          navigate('/employee');
-        } else {
-          handleLogout();
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching user', error);
-        setIsLoggedIn(false);
-      });
+        .then((response) => {
+          if (response.data.role === 'user') {
+            setIsLoggedIn(true);
+            fetchSchedule(token);
+            fetchParts(); // Fetch parts data
+          } else if (response.data.role === 'e') {
+            navigate('/employee');
+          } else {
+            navigate('/login');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user', error);
+          setIsLoggedIn(false);
+        });
     } else {
-      navigate('/login');  // Chuyển hướng về trang đăng nhập nếu không có token
+      navigate('/login');
     }
   }, [navigate]);
 
@@ -59,64 +56,144 @@ const Schedule = () => {
     }
   };
 
-  // Hàm đăng xuất
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-    navigate('/login');
+  // New function to fetch parts
+  const fetchParts = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/part/');
+      setParts(response.data); // Assuming response.data is an array of parts
+    } catch (err) {
+      console.error('Error fetching parts:', err);
+    }
+  };
+
+  // Helper function to get part name by part_mm.id
+  const getPartNameById = (id) => {
+    const part = parts.find(part => part.id === id);
+    return part ? part.name : 'Unknown Part'; // Adjust to access the correct property if needed
+  };
+
+  // Helper function to get part color based on created date and duration
+  const getPartColor = (part) => {
+    if (!part || !part.part_mm) return 'green'; // Default to green if part is not defined
+
+    const duration = getPartDurationById(part.part_mm.part); // Access part_mm.part.id
+    const endDate = new Date(new Date(part.created_date).getTime() + duration * 24 * 60 * 60 * 1000); // Convert duration to milliseconds
+    return endDate < new Date() ? 'red' : 'green'; // Compare with current date
+  };
+
+  // Example placeholder function for getting duration based on part ID
+  const getPartDurationById = (id) => {
+    const part = parts.find(part => part.id === id);
+    return part ? part.duration : 30; // Assuming 30 days as default if not found
+  };
+
+  // Helper function to get maintenance color
+  const getMaintenanceColor = (maintenance) => {
+    const partId = maintenance.part_mm;
+    const duration = getPartDurationById(partId);
+    const endDate = new Date(new Date(maintenance.day).getTime() + duration * 24 * 60 * 60 * 1000); // Convert duration to milliseconds
+    return endDate < new Date() ? 'red' : 'green'; // Compare with current date
+  };
+
+  // Utility function to get the remaining time until the part's due date
+  const getTimeRemainingById = (id) => {
+    const part = parts.find(part => part.id === id);
+    if (!part) return 'Unknown'; // Return 'Unknown' if part is not found
+
+    const duration = getPartDurationById(part.id); // Get duration based on part ID
+    const dueDate = new Date(new Date(part.created_date).getTime() + duration * 24 * 60 * 60 * 1000); // Calculate due date
+    const now = new Date();
+
+    // Calculate remaining time in milliseconds
+    const remainingTime = dueDate - now;
+
+    // If the remaining time is negative, return 'Due'
+    if (remainingTime < 0) {
+        return 'Due';
+    }
+
+    // Convert remaining time to days, hours, and minutes
+    const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Format the time remaining
+    return { days, hours, minutes };
+  };
+
+  // Function to calculate the future date
+  const calculateFutureDate = (days, hours, minutes) => {
+    const now = new Date();
+    const futureDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000));
+    return futureDate.toLocaleDateString(); // Format date as needed
   };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error fetching schedule: {error.message}</p>;
 
   return (
-    <div>
-      <header>
-        {isLoggedIn ? (
-          <>
-            <span>Ok</span>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <p>You are not logged in.</p>
-        )}
-      </header>
+    <div className="schedule-container">
+      <div className="schedule-content">
+        {/* PartMM Section */}
+        <div className="partmm-section">
+          <h3>Don't Maintenance Yet</h3>
+          {data?.partmm && data.partmm.length > 0 ? (
+            data.partmm.map((part, index) => {
+              const { days, hours, minutes } = getTimeRemainingById(part?.part);
+              const partColor = getPartColor(part);
+              const futureDate = calculateFutureDate(days, hours, minutes);
 
-      {currentUser && <div>Welcome, {currentUser.username}!</div>}
-
-      {/* Hiển thị dữ liệu partmm */}
-      {data?.partmm && data.partmm.length > 0 ? (
-        <div>
-          <h3>PartMM Details</h3>
-          {data.partmm.map((part, index) => (
-            <div key={index}>
-              <p>Part ID: {part.id}</p>
-              <p>Created Date: {new Date(part.created_date).toLocaleString()}</p>
-              <p>Updated Date: {new Date(part.updated_date).toLocaleString()}</p>
-              <p>Is Maintenance: {part.is_Maintenance ? 'Yes' : 'No'}</p>
-              <p>Motorbike Model ID: {part.motorbike_model}</p>
-              <p>Part ID: {part.part}</p>
-            </div>
-          ))}
+              return (
+                  <div
+                      key={index}
+                      className="partmm-card"
+                      style={{
+                        backgroundColor: partColor === 'red' ? '#ffe6e6' : '#e6ffe6',
+                        borderColor: partColor === 'red' ? 'red' : 'green'
+                      }}
+                  >
+                    <h4 style={{color: partColor}}>Part Name: {getPartNameById(part?.part)}</h4>
+                    <p>Date: {new Date(part.created_date).toLocaleString()}</p>
+                    <p>{`${days}d ${hours}h ${minutes}m remaining`}</p> {/* Display time remaining */}
+                    <p>{`Next time is ${futureDate}`}</p> {/* Display future date */}
+                  </div>
+              );
+            })
+          ) : (
+              <p>No partmm data available.</p>
+          )}
         </div>
-      ) : (
-        <p>No partmm data available.</p>
-      )}
 
-      {/* Hiển thị dữ liệu maintenance */}
-      {data?.maintenance && (
-        <div>
-          <h3>Maintenance Details</h3>
-          <p>Maintenance ID: {data.maintenance.id}</p>
-          <p>Day: {data.maintenance.day}</p>
-          <p>Description: {data.maintenance.description}</p>
-          <p>Employee ID: {data.maintenance.employee}</p>
-          <p>User Motorbike ID: {data.maintenance.user_motorbike}</p>
-          <p>Maintenance Type ID: {data.maintenance.maintenance_type}</p>
+        {/* Maintenance Section */}
+        <div className="maintenance-section">
+          <h3>Maintenance</h3>
+          {data?.maintenance && data.maintenance.length > 0 ? (
+            data.maintenance.map((maint, index) => {
+              const maintColor = getMaintenanceColor(maint);
+              const { days, hours, minutes } = getTimeRemainingById(maint.part_mm);
+              const futureDate = calculateFutureDate(days, hours, minutes);
+
+              return (
+                  <div
+                      key={index}
+                      className="maintenance-card"
+                      style={{
+                        backgroundColor: maintColor === 'red' ? '#ffe6e6' : '#e6ffe6',
+                        borderColor: maintColor === 'red' ? 'red' : 'green'
+                      }}
+                  >
+                    <h4 style={{color: maintColor}}>Part Name: {getPartNameById(maint.part_mm)}</h4>
+                    <p>Last time: {new Date(maint.day).toLocaleDateString()} ({maint.description})</p>
+                    <p>{`${days}d ${hours}h ${minutes}m remaining`}</p> {/* Display time remaining for maintenance */}
+                    <p>{`Next time is ${futureDate}`}</p> {/* Display future date for maintenance */}
+                  </div>
+              );
+            })
+          ) : (
+              <p>No maintenance data available.</p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

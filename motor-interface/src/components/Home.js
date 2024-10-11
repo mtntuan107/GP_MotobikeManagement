@@ -1,45 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import apiURL from "../api/api";
+import '../styles/Home.css' // Import the CSS file for styling the drawer
 
 function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
-  // Kiểm tra trạng thái đăng nhập khi component được render
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-
     if (token) {
-      // Nếu có token, thực hiện gọi API để lấy thông tin người dùng hiện tại
       axios.get(`${apiURL}/account/current-user/`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then((response) => {
-        // Kiểm tra vai trò của người dùng
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
         if (response.data.role === 'user') {
           setCurrentUser(response.data);
           setIsLoggedIn(true);
+
         } else if (response.data.role === 'e') {
-          // Nếu vai trò là 'employee', chuyển hướng đến trang '/employee'
           navigate('/employee');
         } else {
-          // Nếu không phải là 'user' hoặc 'employee', gọi hàm đăng xuất
           handleLogout();
         }
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error('Error fetching user', error);
         setIsLoggedIn(false);
       });
+    } else {
+      navigate('/login');
     }
-  }, [navigate]); // Đảm bảo rằng `navigate` được đưa vào dependency array
+  }, [navigate]);
 
-  // Hàm đăng xuất
+  // Logout function
   const handleLogout = () => {
-    // Xóa access_token và refresh_token khi logout
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
@@ -48,18 +47,39 @@ function Home() {
   };
 
   return (
-    <div>
-      <header>
-        {isLoggedIn ? (
-          <>
-            <span>Ok</span>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <Link to="/login">Login</Link>
-        )}
-      </header>
-      {currentUser && <div>Welcome, {currentUser.username}!</div>}
+    <div className="home-container">
+      {/* Drawer Sidebar */}
+      <div className="drawer">
+        <div className="drawer-content">
+          <h2>Menu</h2>
+          <ul>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <Link to="/schedule">Schedule</Link>
+            </li>
+            <li>
+              <Link to="/motorbike">Motorbike</Link>
+            </li>
+            <li>
+              <Link to="/userhistory">History</Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Logout button fixed at the bottom */}
+        <div className="logout-section">
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Main content area */}
+      <div className="content">
+        <Outlet /> {/* This will load Profile, Schedule, or Motorbike based on the route */}
+      </div>
     </div>
   );
 }

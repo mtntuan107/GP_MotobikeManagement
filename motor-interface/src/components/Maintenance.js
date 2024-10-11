@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Form, Input, Select, notification } from 'antd';
-import apiURL from '../api/api';
+import apiURL from '../api/api'; // Adjust the path according to your project structure
+import '../styles/Maintenance.css'; // Import the CSS file for styling
+
 const { Option } = Select;
 
 const Maintenance = () => {
@@ -32,6 +34,7 @@ const Maintenance = () => {
         fetchUsers();
     }, []);
 
+    // Fetch parts when the selected user changes
     useEffect(() => {
         if (!selectedUser) {
             setParts([]);
@@ -49,7 +52,7 @@ const Maintenance = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setParts(partRes.data);  // Set the parts from the response
+                setParts(partRes.data);
             } catch (error) {
                 console.error('Error fetching parts for selected user', error);
             }
@@ -68,7 +71,7 @@ const Maintenance = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setMaintenanceTypes(typeRes.data);  // Set the maintenance types from the response
+                setMaintenanceTypes(typeRes.data);
             } catch (error) {
                 console.error('Error fetching maintenance types', error);
             }
@@ -121,7 +124,7 @@ const Maintenance = () => {
     };
 
     return (
-        <div>
+        <div className="maintenance-container">
             <h1>Create Maintenance Bill</h1>
             <Form onFinish={handleSubmit}>
                 {/* User Selection */}
