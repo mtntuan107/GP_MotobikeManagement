@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.parsers import MultiPartParser
 from django.db.models import Q
+from django.db.models import Max
+
 def index(request):
     return HttpResponse("Motor app")
 
@@ -227,6 +229,10 @@ class PartMMViewSet(viewsets.ModelViewSet,
 
         return Response(data, status=status.HTTP_200_OK)
 
+    from django.db.models import Max
+
+    from django.db.models import Max
+
     @action(methods=['get'], url_path='schedule', detail=False)
     def get_schedule(self, request):
         user_id = request.user.id
@@ -239,15 +245,38 @@ class PartMMViewSet(viewsets.ModelViewSet,
         # Get all parts that are not under maintenance
         parts = PartMM.objects.filter(motorbike_model=user_motorbike.motorbike_model, is_Maintenance=False)
 
-        # Get the latest maintenance record for the user motorbike
-        try:
-            maintenance = Maintenance.objects.filter(user_motorbike=user_motorbike).latest('day')
-        except Maintenance.DoesNotExist:
-            maintenance = None  # or handle this case accordingly
+        # Get the latest maintenance record for each part
+        maintenances = (Maintenance.objects
+                        .filter(user_motorbike=user_motorbike)
+                        .values('part_mm')  # Group by part_mm
+                        .annotate(latest_day=Max('day')))  # Get the latest day for each part
 
-        # Serialize parts and maintenance
-        parts_data = PartMMSerializer(parts, many=True).data  # Serialize as many
-        maintenance_data = MaintenanceSerializer(maintenance).data if maintenance else None
+        # Build a list of latest maintenance records
+        maintenance_data = []
+        for m in maintenances:
+            maintenance = Maintenance.objects.filter(
+                user_motorbike=user_motorbike,
+                part_mm_id=m['part_mm'],
+                day=m['latest_day']
+            ).first()
+
+            if maintenance:
+                maintenance_info = {
+                    'id': maintenance.id,
+                    'created_date': maintenance.created_date,
+                    'updated_date': maintenance.updated_date,
+                    'active': maintenance.active,
+                    'day': maintenance.day,
+                    'description': maintenance.description,
+                    'employee': maintenance.employee.id if maintenance.employee else None,
+                    'user_motorbike': maintenance.user_motorbike.id,
+                    'part_mm': maintenance.part_mm.id,
+                    'maintenance_type': maintenance.maintenance_type.id if maintenance.maintenance_type else None,
+                }
+                maintenance_data.append(maintenance_info)
+
+        # Serialize parts (part_name is now included)
+        parts_data = PartMMSerializer(parts, many=True).data
 
         # Prepare the response data
         response_data = {
@@ -256,6 +285,7 @@ class PartMMViewSet(viewsets.ModelViewSet,
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+
 
 class UserMotorbikeViewSet(viewsets.ModelViewSet,
                      generics.CreateAPIView,
@@ -343,6 +373,37 @@ class MaintenanceViewSet(viewsets.ModelViewSet,
             part.is_Maintenance = True
         part.save()
         return Response(MaintenanceSerializer(maintenance).data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['get'], url_path='maintenance_history', detail=False)
+    def maintenance_history(self, request):
+        maintenances = Maintenance.objects.filter(active=True)
+        data = []
+        for maintenance in maintenances:
+            m = MaintenanceSerializer(maintenance).data
+            m['username'] = maintenance.user_motorbike.user.username
+            m['employeename'] = maintenance.employee.username
+            m['motorbikebrand'] = maintenance.user_motorbike.motorbike_model.brand
+            m['partmmname'] = maintenance.part_mm.part.name
+            m['typename'] = maintenance.maintenance_type.name
+            data.append(m)
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], url_path='user_maintenance_history', detail=False)
+    def user_maintenance_history(self, request):
+        user_id = request.user.id
+        user = get_object_or_404(Account, id=user_id)
+        user_motorbike = get_object_or_404(UserMotorbike, user=user)
+        maintenances = Maintenance.objects.filter(user_motorbike=user_motorbike,active=True)
+        data = []
+        for maintenance in maintenances:
+            m = MaintenanceSerializer(maintenance).data
+            m['username'] = maintenance.user_motorbike.user.username
+            m['employeename'] = maintenance.employee.username
+            m['motorbikebrand'] = maintenance.user_motorbike.motorbike_model.brand
+            m['partmmname'] = maintenance.part_mm.part.name
+            m['typename'] = maintenance.maintenance_type.name
+            data.append(m)
+        return Response(data, status=status.HTTP_200_OK)
 
 class MaintenanceTypeViewSet(viewsets.ModelViewSet,
                      generics.CreateAPIView,
